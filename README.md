@@ -1,6 +1,6 @@
-# 🎵 Blissful Radios
+# 🎵 Dear Sound
 
-A beautiful CLI application for streaming online radio stations through your terminal, built with Node.js, React, and Ink.
+Your terminal audio companion for streaming internet radio stations, built with Node.js, React, and Ink.
 
 ## Features
 
@@ -77,6 +77,7 @@ The compiled output goes to the `dist/` folder.
 - Make sure MPV is installed (see Prerequisites above)
 - Verify MPV is in your PATH: `mpv --version`
 - Restart your terminal after installing MPV
+- Dear Sound will show OS-specific installation instructions
 
 **Audio not playing:**
 - Check your system audio settings and volume
@@ -135,7 +136,7 @@ For new developers, see the detailed [Architecture Guide](ARCHITECTURE.md) which
 ## Project Structure
 
 ```
-blissful-radios/
+dearsound/
 ├── src/
 │   ├── components/
 │   │   ├── App.tsx           # Main application component

@@ -1,4 +1,4 @@
-# Blissful Radios - Architecture Overview
+# Dear Sound - Architecture Overview
 
 ## System Architecture Diagram
 
@@ -73,7 +73,7 @@
 ┌─────────────────────────┐    ┌──────────────────────────┐
 │   Radio-Browser.info    │    │    Local File System     │
 │   API (External)        │    │    ~/.config/            │
-│                         │    │    blissful-radios/      │
+│                         │    │    dearsound/            │
 │ - Station database      │    │                          │
 │ - Metadata              │    │ - config.json (settings) │
 └─────────────────────────┘    └──────────────────────────┘
@@ -177,7 +177,7 @@ App.tsx State
 
 ### 5. **Persistent Storage**
 - Uses `conf` package for cross-platform config
-- Stores in `~/.config/blissful-radios/` (Linux/Mac)
+- Stores in `~/.config/dearsound/` (Linux/Mac)
 - JSON-based, human-readable
 
 ## Data Flow Example: Playing a Station
@@ -213,7 +213,7 @@ App.tsx State
 ## File Structure
 
 ```
-blissful-radios/
+dearsound/
 │
 ├── src/
 │   ├── cli.tsx                 # Entry point - renders App

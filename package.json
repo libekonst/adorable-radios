@@ -1,10 +1,10 @@
 {
-  "name": "blissful-radios",
+  "name": "dearsound",
   "version": "1.0.0",
-  "description": "A beautiful CLI application for streaming online radio stations",
+  "description": "Your terminal audio companion for streaming internet radio",
   "main": "dist/index.js",
   "bin": {
-    "blissful-radios": "./dist/cli.js"
+    "dearsound": "./dist/cli.js"
   },
   "type": "module",
   "scripts": {

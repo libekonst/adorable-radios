@@ -40,7 +40,7 @@ export class RadioPlayer extends EventEmitter {
 
   private showMPVInstallInstructions() {
     const os = platform();
-    console.error('\n❌ MPV not found. Please install MPV to use Blissful Radios.\n');
+    console.error('\n❌ MPV not found. Please install MPV to use Dear Sound.\n');
 
     switch (os) {
       case 'darwin':
@@ -84,7 +84,7 @@ export class RadioPlayer extends EventEmitter {
         const response = await axios.head(url, {
           timeout: 5000,
           headers: {
-            'User-Agent': 'Blissful-Radios/1.0',
+            'User-Agent': 'Dear-Sound/1.0',
             'Icy-MetaData': '1',
           },
         });

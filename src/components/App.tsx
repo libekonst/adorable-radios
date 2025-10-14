@@ -222,7 +222,7 @@ export const App: React.FC = () => {
     <Box flexDirection="column" padding={1}>
       <Box>
         <Text bold color="green">
-          🎵 Blissful Radios
+          🎵 Dear Sound
         </Text>
       </Box>
 
