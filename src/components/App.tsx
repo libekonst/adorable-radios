@@ -132,13 +132,18 @@ export const App: React.FC = () => {
     } else if (key.return && !isSearching) {
       const station = currentList[state.selectedIndex];
       if (station) {
-        if (state.playback.currentStation?.stationuuid === station.stationuuid) {
-          if (state.playback.isPlaying) {
-            player.pause();
-          } else {
-            player.resume();
-          }
+        // Check if same station AND already playing
+        const isSameStation = state.playback.currentStation?.stationuuid === station.stationuuid;
+        const isCurrentlyPlaying = state.playback.isPlaying;
+
+        if (isSameStation && isCurrentlyPlaying) {
+          // Toggle pause/resume for same station
+          player.pause();
+        } else if (isSameStation && !isCurrentlyPlaying) {
+          // Resume same station
+          player.resume();
         } else {
+          // Play different station
           player.play(station);
           api.clickStation(station.stationuuid);
         }

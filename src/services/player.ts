@@ -133,21 +133,23 @@ export class RadioPlayer extends EventEmitter {
     if (!this.mpvProcess) return;
 
     try {
-      // Kill MPV process
-      this.mpvProcess.kill('SIGTERM');
-
-      // Force kill if not terminated after 1 second
-      setTimeout(() => {
-        if (this.mpvProcess && !this.mpvProcess.killed) {
-          this.mpvProcess.kill('SIGKILL');
-        }
-      }, 1000);
-
-      this.mpvProcess = null;
+      // Set state immediately to prevent race conditions
       this._isPlaying = false;
+      const processToKill = this.mpvProcess;
+      this.mpvProcess = null;
       this.currentStation = null;
       this.currentMetadata = '';
       this.ipcSocket = '';
+
+      // Kill MPV process
+      processToKill.kill('SIGTERM');
+
+      // Force kill if not terminated after 1 second
+      setTimeout(() => {
+        if (processToKill && !processToKill.killed) {
+          processToKill.kill('SIGKILL');
+        }
+      }, 1000);
 
       this.emit('stopped');
     } catch (error) {
