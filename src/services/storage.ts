@@ -12,7 +12,7 @@ export class StorageManager {
 
   constructor() {
     this.config = new Conf<StoreSchema>({
-      projectName: 'dearsound',
+      projectName: 'adorable-radios',
       defaults: {
         favorites: [],
         lastPlayed: null,
