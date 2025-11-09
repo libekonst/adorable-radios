@@ -1,4 +1,4 @@
-# Dear Sound - Architecture Overview
+# Adorable Radios - Architecture Overview
 
 ## System Architecture Diagram
 
@@ -73,7 +73,7 @@
 ┌─────────────────────────┐    ┌──────────────────────────┐
 │   Radio-Browser.info    │    │    Local File System     │
 │   API (External)        │    │    ~/.config/            │
-│                         │    │    dearsound/            │
+│                         │    │    adorable-radios/      │
 │ - Station database      │    │                          │
 │ - Metadata              │    │ - config.json (settings) │
 └─────────────────────────┘    └──────────────────────────┘
@@ -177,7 +177,7 @@ App.tsx State
 
 ### 5. **Persistent Storage**
 - Uses `conf` package for cross-platform config
-- Stores in `~/.config/dearsound/` (Linux/Mac)
+- Stores in `~/.config/adorable-radios/` (Linux/Mac)
 - JSON-based, human-readable
 
 ## Data Flow Example: Playing a Station
@@ -213,7 +213,7 @@ App.tsx State
 ## File Structure
 
 ```
-dearsound/
+adorable-radios/
 │
 ├── src/
 │   ├── cli.tsx                 # Entry point - renders App

@@ -227,7 +227,7 @@ export const App: React.FC = () => {
     <Box flexDirection="column" padding={1}>
       <Box>
         <Text bold color="green">
-          🎵 Dear Sound
+          🎵 Adorable Radios
         </Text>
       </Box>
 

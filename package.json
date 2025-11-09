@@ -1,10 +1,10 @@
 {
-  "name": "dearsound",
+  "name": "adorable-radios",
   "version": "1.0.0",
   "description": "Your terminal audio companion for streaming internet radio",
   "main": "dist/index.js",
   "bin": {
-    "dearsound": "./dist/cli.js"
+    "adorable-radios": "./dist/cli.js"
   },
   "type": "module",
   "scripts": {
