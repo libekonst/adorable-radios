@@ -1,32 +1,32 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Text, useInput, useApp } from 'ink';
-import Spinner from 'ink-spinner';
-import { RadioPlayer } from '../services/player.js';
-import { RadioBrowserAPI } from '../services/radio-browser.js';
-import { StorageManager } from '../services/storage.js';
-import { RadioStation, AppState } from '../types.js';
-import { NowPlaying } from './NowPlaying.js';
-import { StationList } from './StationList.js';
-import { SearchInput } from './SearchInput.js';
-import { HelpBar } from './HelpBar.js';
+import React, { useState, useEffect } from "react";
+import { Box, Text, useInput, useApp } from "ink";
+import Spinner from "ink-spinner";
+import { RadioPlayer } from "../services/player.js";
+import { RadioBrowserAPI } from "../services/radio-browser.js";
+import { StorageManager } from "../services/storage.js";
+import { RadioStation, AppState } from "../types.js";
+import { NowPlaying } from "./NowPlaying.js";
+import { StationList } from "./StationList.js";
+import { SearchInput } from "./SearchInput.js";
+import { HelpBar } from "./HelpBar.js";
 
 const player = new RadioPlayer();
 const api = new RadioBrowserAPI();
 const storage = new StorageManager();
 
-export const App: React.FC = () => {
+export function App() {
   const { exit } = useApp();
   const [state, setState] = useState<AppState>({
-    view: 'browse',
+    view: "browse",
     playback: {
       isPlaying: false,
       currentStation: null,
       volume: storage.getVolume(),
-      metadata: '',
+      metadata: "",
     },
     stations: [],
     favorites: storage.getFavorites(),
-    searchQuery: '',
+    searchQuery: "",
     selectedIndex: 0,
     loading: true,
     error: null,
@@ -96,28 +96,29 @@ export const App: React.FC = () => {
       }));
     };
 
-    player.on('playing', handlePlaying);
-    player.on('stopped', handleStopped);
+    player.on("playing", handlePlaying);
+    player.on("stopped", handleStopped);
 
     return () => {
-      player.off('playing', handlePlaying);
-      player.off('stopped', handleStopped);
+      player.off("playing", handlePlaying);
+      player.off("stopped", handleStopped);
     };
   }, []);
 
   // Keyboard controls
   useInput((input, key) => {
     // Don't handle input when searching
-    if (isSearching && input !== '\u001B') {
+    if (isSearching && input !== "\u001B") {
       return;
     }
 
-    if (input === 'q') {
+    if (input === "q") {
       exit();
       return;
     }
 
-    const currentList = state.view === 'favorites' ? state.favorites : state.stations;
+    const currentList =
+      state.view === "favorites" ? state.favorites : state.stations;
 
     if (key.upArrow) {
       setState(prev => ({
@@ -133,7 +134,8 @@ export const App: React.FC = () => {
       const station = currentList[state.selectedIndex];
       if (station) {
         // Check if same station AND already playing
-        const isSameStation = state.playback.currentStation?.stationuuid === station.stationuuid;
+        const isSameStation =
+          state.playback.currentStation?.stationuuid === station.stationuuid;
         const isCurrentlyPlaying = state.playback.isPlaying;
 
         if (isSameStation && isCurrentlyPlaying) {
@@ -148,9 +150,9 @@ export const App: React.FC = () => {
           api.clickStation(station.stationuuid);
         }
       }
-    } else if (input === ' ') {
+    } else if (input === " ") {
       player.stop();
-    } else if (input === '+' || input === '=') {
+    } else if (input === "+" || input === "=") {
       const newVolume = Math.min(100, state.playback.volume + 5);
       player.setVolume(newVolume);
       storage.setVolume(newVolume);
@@ -158,7 +160,7 @@ export const App: React.FC = () => {
         ...prev,
         playback: { ...prev.playback, volume: newVolume },
       }));
-    } else if (input === '-' || input === '_') {
+    } else if (input === "-" || input === "_") {
       const newVolume = Math.max(0, state.playback.volume - 5);
       player.setVolume(newVolume);
       storage.setVolume(newVolume);
@@ -166,7 +168,7 @@ export const App: React.FC = () => {
         ...prev,
         playback: { ...prev.playback, volume: newVolume },
       }));
-    } else if (input === 'f') {
+    } else if (input === "f") {
       const station = currentList[state.selectedIndex];
       if (station) {
         storage.toggleFavorite(station);
@@ -175,21 +177,21 @@ export const App: React.FC = () => {
           favorites: storage.getFavorites(),
         }));
       }
-    } else if (input === 's') {
+    } else if (input === "s") {
       setIsSearching(true);
-    } else if (input === 'b') {
+    } else if (input === "b") {
       setState(prev => ({
         ...prev,
-        view: 'browse',
+        view: "browse",
         selectedIndex: 0,
       }));
-    } else if (input === 'v') {
+    } else if (input === "v") {
       setState(prev => ({
         ...prev,
-        view: 'favorites',
+        view: "favorites",
         selectedIndex: 0,
       }));
-    } else if (input === '\u001B' && isSearching) {
+    } else if (input === "\u001B" && isSearching) {
       setIsSearching(false);
     }
   });
@@ -203,7 +205,7 @@ export const App: React.FC = () => {
       setState(prev => ({
         ...prev,
         stations: results,
-        view: 'browse',
+        view: "browse",
         selectedIndex: 0,
         loading: false,
       }));
@@ -220,7 +222,8 @@ export const App: React.FC = () => {
     setIsSearching(false);
   };
 
-  const currentList = state.view === 'favorites' ? state.favorites : state.stations;
+  const currentList =
+    state.view === "favorites" ? state.favorites : state.stations;
   const favoriteUuids = new Set(state.favorites.map(f => f.stationuuid));
 
   return (
@@ -244,7 +247,9 @@ export const App: React.FC = () => {
         <>
           <Box marginBottom={1}>
             <Text bold color="cyan">
-              {state.view === 'favorites' ? 'Your Favorites' : 'Browse Stations'}
+              {state.view === "favorites"
+                ? "Your Favorites"
+                : "Browse Stations"}
               {state.searchQuery && ` - Search: "${state.searchQuery}"`}
             </Text>
           </Box>
@@ -273,4 +278,4 @@ export const App: React.FC = () => {
       <HelpBar view={state.view} />
     </Box>
   );
-};
+}

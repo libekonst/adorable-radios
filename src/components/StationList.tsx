@@ -1,20 +1,20 @@
-import React from 'react';
-import { Box, Text } from 'ink';
-import { RadioStation } from '../types.js';
+import React from "react";
+import { Box, Text } from "ink";
+import { RadioStation } from "../types.js";
 
-interface StationListProps {
+type Props = {
   stations: RadioStation[];
   selectedIndex: number;
   favoriteUuids: Set<string>;
   currentStationUuid?: string;
-}
+};
 
-export const StationList: React.FC<StationListProps> = ({
+export function StationList({
   stations,
   selectedIndex,
   favoriteUuids,
   currentStationUuid,
-}) => {
+}: Props) {
   if (stations.length === 0) {
     return (
       <Box marginTop={1}>
@@ -32,16 +32,16 @@ export const StationList: React.FC<StationListProps> = ({
 
         return (
           <Box key={station.stationuuid} marginBottom={0}>
-            <Text color={isSelected ? 'cyan' : 'white'} bold={isSelected}>
-              {isSelected ? '> ' : '  '}
-              {isPlaying ? '♫ ' : ''}
+            <Text color={isSelected ? "cyan" : "white"} bold={isSelected}>
+              {isSelected ? "> " : "  "}
+              {isPlaying ? "♫ " : ""}
               {station.name}
-              {isFavorite ? ' ★' : ''}
+              {isFavorite ? " ★" : ""}
             </Text>
             <Text color="gray" dimColor>
-              {' '}
-              ({station.country || 'Unknown'})
-              {station.bitrate > 0 ? ` ${station.bitrate}kbps` : ''}
+              {" "}
+              ({station.country || "Unknown"})
+              {station.bitrate > 0 ? ` ${station.bitrate}kbps` : ""}
             </Text>
           </Box>
         );
@@ -53,4 +53,4 @@ export const StationList: React.FC<StationListProps> = ({
       )}
     </Box>
   );
-};
+}

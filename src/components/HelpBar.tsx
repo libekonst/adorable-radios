@@ -1,11 +1,11 @@
-import React from 'react';
-import { Box, Text } from 'ink';
+import React from "react";
+import { Box, Text } from "ink";
 
-interface HelpBarProps {
+type Props = {
   view: string;
-}
+};
 
-export const HelpBar: React.FC<HelpBarProps> = ({ view }) => {
+export function HelpBar({ view }: Props) {
   return (
     <Box
       borderStyle="round"
@@ -21,21 +21,20 @@ export const HelpBar: React.FC<HelpBarProps> = ({ view }) => {
       </Box>
       <Box>
         <Text>
-          <Text color="yellow">↑/↓</Text> Navigate{' '}
-          <Text color="yellow">Enter</Text> Play/Pause{' '}
-          <Text color="yellow">Space</Text> Stop{' '}
-          <Text color="yellow">+/-</Text> Volume
+          <Text color="yellow">↑/↓</Text> Navigate{" "}
+          <Text color="yellow">Enter</Text> Play/Pause{" "}
+          <Text color="yellow">Space</Text> Stop <Text color="yellow">+/-</Text>{" "}
+          Volume
         </Text>
       </Box>
       <Box>
         <Text>
-          <Text color="yellow">f</Text> Favorite{' '}
-          <Text color="yellow">s</Text> Search{' '}
-          <Text color="yellow">b</Text> Browse{' '}
-          <Text color="yellow">v</Text> Favorites{' '}
-          <Text color="yellow">q</Text> Quit
+          <Text color="yellow">f</Text> Favorite <Text color="yellow">s</Text>{" "}
+          Search <Text color="yellow">b</Text> Browse{" "}
+          <Text color="yellow">v</Text> Favorites <Text color="yellow">q</Text>{" "}
+          Quit
         </Text>
       </Box>
     </Box>
   );
-};
+}

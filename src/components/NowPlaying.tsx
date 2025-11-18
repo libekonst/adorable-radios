@@ -1,20 +1,15 @@
-import React from 'react';
-import { Box, Text } from 'ink';
-import { RadioStation } from '../types.js';
+import React from "react";
+import { Box, Text } from "ink";
+import { RadioStation } from "../types.js";
 
-interface NowPlayingProps {
+type Props = {
   station: RadioStation | null;
   isPlaying: boolean;
   volume: number;
   metadata: string;
-}
+};
 
-export const NowPlaying: React.FC<NowPlayingProps> = ({
-  station,
-  isPlaying,
-  volume,
-  metadata,
-}) => {
+export function NowPlaying({ station, isPlaying, volume, metadata }: Props) {
   if (!station) {
     return (
       <Box borderStyle="round" borderColor="gray" paddingX={1} marginBottom={1}>
@@ -26,14 +21,14 @@ export const NowPlaying: React.FC<NowPlayingProps> = ({
   return (
     <Box
       borderStyle="round"
-      borderColor={isPlaying ? 'green' : 'yellow'}
+      borderColor={isPlaying ? "green" : "yellow"}
       paddingX={1}
       marginBottom={1}
       flexDirection="column"
     >
       <Box>
-        <Text bold color={isPlaying ? 'green' : 'yellow'}>
-          {isPlaying ? '♫ ' : '⏸ '}
+        <Text bold color={isPlaying ? "green" : "yellow"}>
+          {isPlaying ? "♫ " : "⏸ "}
           {station.name}
         </Text>
       </Box>
@@ -54,4 +49,4 @@ export const NowPlaying: React.FC<NowPlayingProps> = ({
       </Box>
     </Box>
   );
-};
+}
