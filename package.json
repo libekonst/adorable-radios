@@ -2,7 +2,7 @@
   "name": "adorable-radios",
   "version": "1.0.0",
   "description": "Your terminal audio companion for streaming internet radio",
-  "main": "dist/index.js",
+  "main": "dist/cli.js",
   "bin": {
     "adorable-radios": "./dist/cli.js"
   },
