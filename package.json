@@ -12,7 +12,10 @@
     "dev:watch": "tsx watch src/cli.tsx",
     "build": "tsc",
     "start": "node dist/cli.js",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "format": "biome format --write ."
   },
   "keywords": [
     "radio",
