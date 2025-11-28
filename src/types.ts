@@ -1,4 +1,4 @@
-export interface RadioStation {
+export type RadioStation = {
   stationuuid: string;
   name: string;
   url: string;
@@ -14,7 +14,7 @@ export interface RadioStation {
   codec: string;
   bitrate: number;
   lastcheckok: number;
-}
+};
 
 export interface PlaybackState {
   isPlaying: boolean;
@@ -24,8 +24,8 @@ export interface PlaybackState {
 }
 
 export interface AppState {
-  view: 'browse' | 'favorites' | 'search' | 'playing';
-  playback: PlaybackState;
+  view: "browse" | "favorites" | "search" | "playing";
+  playback: Omit<PlaybackState, "metadata" | "volume">;
   stations: RadioStation[];
   favorites: RadioStation[];
   searchQuery: string;

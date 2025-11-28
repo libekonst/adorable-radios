@@ -1,18 +1,62 @@
-import React, { useState, useEffect } from "react";
-import { Box, Text, useInput, useApp } from "ink";
+import { Box, Text, useApp, useInput } from "ink";
 import Spinner from "ink-spinner";
+import React, { useEffect, useState } from "react";
 import { RadioPlayer } from "../services/player.js";
 import { RadioBrowserAPI } from "../services/radio-browser.js";
 import { StorageManager } from "../services/storage.js";
-import { RadioStation, AppState } from "../types.js";
-import { NowPlaying } from "./NowPlaying.js";
-import { StationList } from "./StationList.js";
-import { SearchInput } from "./SearchInput.js";
+import type { AppState, PlaybackState, RadioStation } from "../types.js";
 import { HelpBar } from "./HelpBar.js";
+import { NowPlaying } from "./NowPlaying.js";
+import { SearchInput } from "./SearchInput.js";
+import { StationList } from "./StationList.js";
 
+// TODO proper singleton pattern for testability and lazy initialization (save startup time/memory)
 const player = new RadioPlayer();
 const api = new RadioBrowserAPI();
 const storage = new StorageManager();
+
+export function usePlaybackStatus(): PlaybackState {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentStation, setCurrentStation] = useState<RadioStation | null>(
+    null
+  );
+  const [volume, setVolume] = useState(() => storage.getVolume() ?? 50);
+  const [metadata, setMetadata] = useState("");
+
+  // Listen to volume changes
+  useEffect(() => {
+    const handleVolumeChange = (newVolume: number) => {
+      setVolume(newVolume);
+    };
+
+    player.on("volumechange", handleVolumeChange);
+    return () => {
+      player.off("volumechange", handleVolumeChange);
+    };
+  }, []);
+
+  // TODO don't setup the interval if no station is playing or player isn't initialized
+  // Metadata update interval
+  useEffect(() => {
+    if (!currentStation) return;
+
+    const intervalID = setInterval(() => {
+      const playerMeta = player.getMetadata();
+      setMetadata(playerMeta);
+    }, 2000);
+
+    return () => {
+      clearInterval(intervalID);
+    };
+  }, [currentStation]);
+
+  return {
+    isPlaying,
+    currentStation,
+    volume,
+    metadata,
+  };
+}
 
 export function App() {
   const { exit } = useApp();
@@ -21,8 +65,6 @@ export function App() {
     playback: {
       isPlaying: false,
       currentStation: null,
-      volume: storage.getVolume(),
-      metadata: "",
     },
     stations: [],
     favorites: storage.getFavorites(),
@@ -38,8 +80,7 @@ export function App() {
   useEffect(() => {
     const init = async () => {
       try {
-        await player.initialize();
-        await player.setVolume(state.playback.volume);
+        await player.initialize({ initialVolume: storage.getVolume() ?? 50 });
 
         const topStations = await api.getTopStations(100);
         setState(prev => ({
@@ -57,23 +98,9 @@ export function App() {
     };
 
     init();
-
-    // Metadata update interval
-    const metadataInterval = setInterval(async () => {
-      if (state.playback.currentStation) {
-        const metadata = await player.getMetadata();
-        setState(prev => ({
-          ...prev,
-          playback: { ...prev.playback, metadata },
-        }));
-      }
-    }, 2000);
-
-    return () => {
-      clearInterval(metadataInterval);
-      player.quit();
-    };
   }, []);
+
+  const { currentStation, volume, metadata, isPlaying } = usePlaybackStatus();
 
   // Player event listeners
   useEffect(() => {
@@ -153,21 +180,13 @@ export function App() {
     } else if (input === " ") {
       player.stop();
     } else if (input === "+" || input === "=") {
-      const newVolume = Math.min(100, state.playback.volume + 5);
+      const newVolume = Math.min(100, player.getVolume() + 5);
       player.setVolume(newVolume);
       storage.setVolume(newVolume);
-      setState(prev => ({
-        ...prev,
-        playback: { ...prev.playback, volume: newVolume },
-      }));
     } else if (input === "-" || input === "_") {
-      const newVolume = Math.max(0, state.playback.volume - 5);
+      const newVolume = Math.max(0, player.getVolume() - 5);
       player.setVolume(newVolume);
       storage.setVolume(newVolume);
-      setState(prev => ({
-        ...prev,
-        playback: { ...prev.playback, volume: newVolume },
-      }));
     } else if (input === "f") {
       const station = currentList[state.selectedIndex];
       if (station) {
@@ -222,6 +241,7 @@ export function App() {
     setIsSearching(false);
   };
 
+  // TODO Improve view router
   const currentList =
     state.view === "favorites" ? state.favorites : state.stations;
   const favoriteUuids = new Set(state.favorites.map(f => f.stationuuid));
@@ -237,8 +257,8 @@ export function App() {
       <NowPlaying
         station={state.playback.currentStation}
         isPlaying={state.playback.isPlaying}
-        volume={state.playback.volume}
-        metadata={state.playback.metadata}
+        volume={volume}
+        metadata={metadata}
       />
 
       {isSearching ? (

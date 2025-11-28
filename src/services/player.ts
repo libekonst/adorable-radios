@@ -18,7 +18,7 @@ export class RadioPlayer extends EventEmitter {
     super();
   }
 
-  async initialize() {
+  async initialize({ initialVolume = 50 } = {}) {
     if (this.isInitialized) return;
 
     // Check if mpv is available
@@ -31,6 +31,8 @@ export class RadioPlayer extends EventEmitter {
           else reject(new Error('mpv not found'));
         });
       });
+
+      await this.setVolume(initialVolume);
       this.isInitialized = true;
     } catch (error) {
       this.showMPVInstallInstructions();
@@ -207,11 +209,11 @@ export class RadioPlayer extends EventEmitter {
     });
   }
 
-  async getVolume(): Promise<number> {
+  getVolume() {
     return this._volume;
   }
 
-  async getMetadata(): Promise<string> {
+  getMetadata() {
     return this.currentMetadata;
   }
 
