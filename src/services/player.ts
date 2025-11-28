@@ -179,6 +179,7 @@ export class RadioPlayer extends EventEmitter<RadioPlayerEvents> {
     }
   }
 
+  // TODO consistent volume change with MPV command success/failure
   async setVolume(volume: number) {
     this._volume = Math.max(0, Math.min(100, volume));
 
