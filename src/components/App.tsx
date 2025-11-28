@@ -23,6 +23,27 @@ export function usePlaybackStatus(): PlaybackState {
   const [volume, setVolume] = useState(() => storage.getVolume() ?? 50);
   const [metadata, setMetadata] = useState("");
 
+  // Player event listeners
+  useEffect(() => {
+    const handlePlaying = (station: RadioStation) => {
+      setIsPlaying(true);
+      setCurrentStation(station);
+      storage.setLastPlayed(station);
+    };
+
+    const handleStopped = () => {
+      setIsPlaying(false);
+    };
+
+    player.on("playing", handlePlaying);
+    player.on("stopped", handleStopped);
+
+    return () => {
+      player.off("playing", handlePlaying);
+      player.off("stopped", handleStopped);
+    };
+  }, []);
+
   // Listen to volume changes
   useEffect(() => {
     const handleVolumeChange = (newVolume: number) => {
@@ -62,10 +83,6 @@ export function App() {
   const { exit } = useApp();
   const [state, setState] = useState<AppState>({
     view: "browse",
-    playback: {
-      isPlaying: false,
-      currentStation: null,
-    },
     stations: [],
     favorites: storage.getFavorites(),
     searchQuery: "",
@@ -101,36 +118,6 @@ export function App() {
   }, []);
 
   const { currentStation, volume, metadata, isPlaying } = usePlaybackStatus();
-
-  // Player event listeners
-  useEffect(() => {
-    const handlePlaying = (station: RadioStation) => {
-      setState(prev => ({
-        ...prev,
-        playback: {
-          ...prev.playback,
-          isPlaying: true,
-          currentStation: station,
-        },
-      }));
-      storage.setLastPlayed(station);
-    };
-
-    const handleStopped = () => {
-      setState(prev => ({
-        ...prev,
-        playback: { ...prev.playback, isPlaying: false },
-      }));
-    };
-
-    player.on("playing", handlePlaying);
-    player.on("stopped", handleStopped);
-
-    return () => {
-      player.off("playing", handlePlaying);
-      player.off("stopped", handleStopped);
-    };
-  }, []);
 
   // Keyboard controls
   useInput(async (input, key) => {
@@ -238,7 +225,7 @@ export function App() {
       </Box>
 
       <NowPlaying
-        station={state.playback.currentStation}
+        station={currentStation}
         isPlaying={isPlaying}
         volume={volume}
         metadata={metadata}
@@ -272,7 +259,7 @@ export function App() {
               stations={currentList}
               selectedIndex={state.selectedIndex}
               favoriteUuids={favoriteUuids}
-              currentStationUuid={state.playback.currentStation?.stationuuid}
+              currentStationUuid={currentStation?.stationuuid}
             />
           )}
         </>

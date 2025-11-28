@@ -25,7 +25,6 @@ export interface PlaybackState {
 
 export interface AppState {
   view: "browse" | "favorites" | "search" | "playing";
-  playback: Omit<PlaybackState, "metadata" | "volume">;
   stations: RadioStation[];
   favorites: RadioStation[];
   searchQuery: string;
