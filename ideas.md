@@ -10,3 +10,4 @@
 
 1. Play pause not working great
 2. Pressing q doesn't quit as long as audio is playing.
+3. When the initial fetch request fails, the app is unusable.
