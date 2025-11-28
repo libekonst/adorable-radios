@@ -1,5 +1,5 @@
 import axios from "axios";
-import { RadioStation } from "../types.js";
+import type { RadioStation } from "../types.js";
 
 export class RadioBrowserAPI {
   private baseUrl: string = "https://fi1.api.radio-browser.info/json";

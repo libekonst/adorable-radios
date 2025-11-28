@@ -1,5 +1,5 @@
-import Conf from 'conf';
-import { RadioStation } from '../types.js';
+import Conf from "conf";
+import type { RadioStation } from "../types.js";
 
 interface StoreSchema {
   favorites: RadioStation[];
@@ -12,7 +12,7 @@ export class StorageManager {
 
   constructor() {
     this.config = new Conf<StoreSchema>({
-      projectName: 'adorable-radios',
+      projectName: "adorable-radios",
       defaults: {
         favorites: [],
         lastPlayed: null,
@@ -22,23 +22,25 @@ export class StorageManager {
   }
 
   getFavorites(): RadioStation[] {
-    return this.config.get('favorites');
+    return this.config.get("favorites");
   }
 
   addFavorite(station: RadioStation): void {
     const favorites = this.getFavorites();
-    const exists = favorites.some(fav => fav.stationuuid === station.stationuuid);
+    const exists = favorites.some(
+      fav => fav.stationuuid === station.stationuuid
+    );
 
     if (!exists) {
       favorites.push(station);
-      this.config.set('favorites', favorites);
+      this.config.set("favorites", favorites);
     }
   }
 
   removeFavorite(stationUuid: string): void {
     const favorites = this.getFavorites();
     const filtered = favorites.filter(fav => fav.stationuuid !== stationUuid);
-    this.config.set('favorites', filtered);
+    this.config.set("favorites", filtered);
   }
 
   isFavorite(stationUuid: string): boolean {
@@ -57,19 +59,20 @@ export class StorageManager {
   }
 
   setLastPlayed(station: RadioStation | null): void {
-    this.config.set('lastPlayed', station);
+    this.config.set("lastPlayed", station);
   }
 
   getLastPlayed(): RadioStation | null {
-    return this.config.get('lastPlayed');
+    return this.config.get("lastPlayed");
   }
 
   setVolume(volume: number): void {
-    this.config.set('volume', volume);
+    this.config.set("volume", volume);
   }
 
+  // TODO or undefined?
   getVolume(): number {
-    return this.config.get('volume');
+    return this.config.get("volume");
   }
 
   clear(): void {
