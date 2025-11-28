@@ -194,6 +194,16 @@ export class RadioPlayer extends EventEmitter<RadioPlayerEvents> {
     this.emit("volumechange", this._volume);
   }
 
+  async increaseVolume(step = 5) {
+    await this.setVolume(this._volume + step);
+    return this._volume;
+  }
+
+  async decreaseVolume(step = 5) {
+    await this.setVolume(this._volume - step);
+    return this._volume;
+  }
+
   // Helper method for IPC communication with MPV
   private async sendMPVCommand(command: any[]): Promise<void> {
     return new Promise((resolve, reject) => {

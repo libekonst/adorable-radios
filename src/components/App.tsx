@@ -133,7 +133,7 @@ export function App() {
   }, []);
 
   // Keyboard controls
-  useInput((input, key) => {
+  useInput(async (input, key) => {
     // Don't handle input when searching
     if (isSearching && input !== "\u001B") {
       return;
@@ -180,12 +180,10 @@ export function App() {
     } else if (input === " ") {
       player.stop();
     } else if (input === "+" || input === "=") {
-      const newVolume = Math.min(100, player.getVolume() + 5);
-      player.setVolume(newVolume);
+      const newVolume = await player.increaseVolume();
       storage.setVolume(newVolume);
     } else if (input === "-" || input === "_") {
-      const newVolume = Math.max(0, player.getVolume() - 5);
-      player.setVolume(newVolume);
+      const newVolume = await player.decreaseVolume();
       storage.setVolume(newVolume);
     } else if (input === "f") {
       const station = currentList[state.selectedIndex];
