@@ -250,4 +250,20 @@ export class RadioPlayer extends EventEmitter<RadioPlayerEvents> {
     await this.stop();
     this.isInitialized = false;
   }
+
+  /**
+   * Intelligently handles station selection:
+   * - If same station is playing: pause it
+   * - If same station is paused: resume it
+   * - If different station: play it
+   */
+  async toggleOrPlay(station: RadioStation): Promise<void> {
+    const isSameStation =
+      this.currentStation?.stationuuid === station.stationuuid;
+    const isCurrentlyPlaying = this._isPlaying;
+
+    if (isSameStation && isCurrentlyPlaying) await this.pause();
+    else if (isSameStation && !isCurrentlyPlaying) await this.resume();
+    else await this.play(station);
+  }
 }

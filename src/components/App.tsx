@@ -160,22 +160,7 @@ export function App() {
     } else if (key.return && !isSearching) {
       const station = currentList[state.selectedIndex];
       if (station) {
-        // Check if same station AND already playing
-        const isSameStation =
-          state.playback.currentStation?.stationuuid === station.stationuuid;
-        const isCurrentlyPlaying = state.playback.isPlaying;
-
-        if (isSameStation && isCurrentlyPlaying) {
-          // Toggle pause/resume for same station
-          player.pause();
-        } else if (isSameStation && !isCurrentlyPlaying) {
-          // Resume same station
-          player.resume();
-        } else {
-          // Play different station
-          player.play(station);
-          api.clickStation(station.stationuuid);
-        }
+        await player.toggleOrPlay(station);
       }
     } else if (input === " ") {
       player.stop();
@@ -254,7 +239,7 @@ export function App() {
 
       <NowPlaying
         station={state.playback.currentStation}
-        isPlaying={state.playback.isPlaying}
+        isPlaying={isPlaying}
         volume={volume}
         metadata={metadata}
       />

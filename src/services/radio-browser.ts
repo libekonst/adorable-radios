@@ -101,6 +101,11 @@ export class RadioBrowserAPI {
     }
   }
 
+  // TODO: Optional analytics tracking for Radio Browser API
+  // Calling this endpoint increments the station's click counter, helping the community
+  // identify popular stations. Only counts once per IP per station per day.
+  // Should be opt-in with user consent before implementing.
+  // Usage: await api.clickStation(station.stationuuid) when playing a new station
   async clickStation(stationUuid: string): Promise<void> {
     try {
       await axios.get(`${this.baseUrl}/url/${stationUuid}`);
