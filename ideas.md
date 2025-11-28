@@ -9,3 +9,4 @@
 ## Bugs
 
 1. Play pause not working great
+2. Pressing q doesn't quit as long as audio is playing.
