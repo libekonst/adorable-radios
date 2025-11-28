@@ -2,10 +2,16 @@ import { EventEmitter } from 'events';
 import { spawn, ChildProcess } from 'child_process';
 import { RadioStation } from '../types.js';
 import axios from 'axios';
-import { Socket } from 'net';
-import { platform } from 'os';
+import type { RadioStation } from "../types.js";
 
-export class RadioPlayer extends EventEmitter {
+type RadioPlayerEvents = {
+  playing: [station: RadioStation];
+  stopped: [];
+  error: [message: string];
+  volumechange: [volume: number];
+};
+
+export class RadioPlayer extends EventEmitter<RadioPlayerEvents> {
   private currentStation: RadioStation | null = null;
   private _volume: number = 50; // 0-100 for MPV
   private isInitialized: boolean = false;
