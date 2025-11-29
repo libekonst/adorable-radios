@@ -4,80 +4,17 @@ import React, { useEffect, useState } from "react";
 import { RadioPlayer } from "../services/player.js";
 import { RadioBrowserAPI } from "../services/radio-browser.js";
 import { StorageManager } from "../services/storage.js";
-import type { AppState, PlaybackState, RadioStation } from "../types.js";
+import type { AppState } from "../types.js";
 import { HelpBar } from "./HelpBar.js";
 import { NowPlaying } from "./NowPlaying.js";
 import { SearchInput } from "./SearchInput.js";
 import { StationList } from "./StationList.js";
+import { usePlaybackStatus } from "./usePlaybackStatus.js";
 
 // TODO proper singleton pattern for testability and lazy initialization (save startup time/memory)
-const player = new RadioPlayer();
+export const player = new RadioPlayer();
 const api = new RadioBrowserAPI();
-const storage = new StorageManager();
-
-export function usePlaybackStatus(): PlaybackState {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentStation, setCurrentStation] = useState<RadioStation | null>(
-    null
-  );
-  const [volume, setVolume] = useState(() => storage.getVolume() ?? 50);
-  const [metadata, setMetadata] = useState("");
-
-  // Player event listeners
-  useEffect(() => {
-    const handlePlaying = (station: RadioStation) => {
-      setIsPlaying(true);
-      setCurrentStation(station);
-      storage.setLastPlayed(station);
-    };
-
-    const handleStopped = () => {
-      setIsPlaying(false);
-    };
-
-    player.on("playing", handlePlaying);
-    player.on("stopped", handleStopped);
-
-    return () => {
-      player.off("playing", handlePlaying);
-      player.off("stopped", handleStopped);
-    };
-  }, []);
-
-  // Listen to volume changes
-  useEffect(() => {
-    const handleVolumeChange = (newVolume: number) => {
-      setVolume(newVolume);
-    };
-
-    player.on("volumechange", handleVolumeChange);
-    return () => {
-      player.off("volumechange", handleVolumeChange);
-    };
-  }, []);
-
-  // TODO don't setup the interval if no station is playing or player isn't initialized
-  // Metadata update interval
-  useEffect(() => {
-    if (!currentStation) return;
-
-    const intervalID = setInterval(() => {
-      const playerMeta = player.getMetadata();
-      setMetadata(playerMeta);
-    }, 2000);
-
-    return () => {
-      clearInterval(intervalID);
-    };
-  }, [currentStation]);
-
-  return {
-    isPlaying,
-    currentStation,
-    volume,
-    metadata,
-  };
-}
+export const storage = new StorageManager();
 
 export function App() {
   const { exit } = useApp();
@@ -265,7 +202,7 @@ export function App() {
         </>
       )}
 
-      <HelpBar view={state.view} />
+      <HelpBar />
     </Box>
   );
 }

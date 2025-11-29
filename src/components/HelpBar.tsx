@@ -1,11 +1,7 @@
-import React from "react";
 import { Box, Text } from "ink";
+import React from "react";
 
-type Props = {
-  view: string;
-};
-
-export function HelpBar({ view }: Props) {
+export function HelpBar() {
   return (
     <Box
       borderStyle="round"
