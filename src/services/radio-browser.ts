@@ -1,15 +1,33 @@
-import axios from "axios";
 import type { RadioStation } from "../types.js";
 
 export class RadioBrowserAPI {
   private baseUrl: string = "https://fi1.api.radio-browser.info/json";
 
+  private buildUrl(path: string, params?: Record<string, any>): string {
+    const url = new URL(`${this.baseUrl}${path}`);
+    if (!params) {
+      return url.toString();
+    }
+
+    Object.entries(params)
+      .filter(([_, value]) => value != null)
+      .forEach(([key, value]) => {
+        const values = Array.isArray(value) ? value : [value];
+        values.forEach(v => {
+          url.searchParams.append(key, String(v));
+        });
+      });
+
+    return url.toString();
+  }
+
   async getTopStations(limit: number = 50): Promise<RadioStation[]> {
     try {
-      const response = await axios.get(
-        `${this.baseUrl}/stations/topvote/${limit}`
-      );
-      return response.data;
+      const response = await fetch(this.buildUrl(`/stations/topvote/${limit}`));
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      return (await response.json()) as RadioStation[];
     } catch (error) {
       throw new Error(`Failed to fetch top stations: ${error}`);
     }
@@ -20,16 +38,19 @@ export class RadioBrowserAPI {
     limit: number = 50
   ): Promise<RadioStation[]> {
     try {
-      const response = await axios.get(`${this.baseUrl}/stations/search`, {
-        params: {
+      const response = await fetch(
+        this.buildUrl("/stations/search", {
           name: query,
           limit,
           hidebroken: true,
           order: "votes",
           reverse: true,
-        },
-      });
-      return response.data;
+        })
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      return (await response.json()) as RadioStation[];
     } catch (error) {
       throw new Error(`Failed to search stations: ${error}`);
     }
@@ -40,18 +61,18 @@ export class RadioBrowserAPI {
     limit: number = 50
   ): Promise<RadioStation[]> {
     try {
-      const response = await axios.get(
-        `${this.baseUrl}/stations/bycountrycodeexact/${countryCode}`,
-        {
-          params: {
-            limit,
-            hidebroken: true,
-            order: "votes",
-            reverse: true,
-          },
-        }
+      const response = await fetch(
+        this.buildUrl(`/stations/bycountrycodeexact/${countryCode}`, {
+          limit,
+          hidebroken: true,
+          order: "votes",
+          reverse: true,
+        })
       );
-      return response.data;
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      return (await response.json()) as RadioStation[];
     } catch (error) {
       throw new Error(`Failed to fetch stations by country: ${error}`);
     }
@@ -62,18 +83,18 @@ export class RadioBrowserAPI {
     limit: number = 50
   ): Promise<RadioStation[]> {
     try {
-      const response = await axios.get(
-        `${this.baseUrl}/stations/bytagexact/${tag}`,
-        {
-          params: {
-            limit,
-            hidebroken: true,
-            order: "votes",
-            reverse: true,
-          },
-        }
+      const response = await fetch(
+        this.buildUrl(`/stations/bytagexact/${tag}`, {
+          limit,
+          hidebroken: true,
+          order: "votes",
+          reverse: true,
+        })
       );
-      return response.data;
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      return (await response.json()) as RadioStation[];
     } catch (error) {
       throw new Error(`Failed to fetch stations by tag: ${error}`);
     }
@@ -84,18 +105,18 @@ export class RadioBrowserAPI {
     limit: number = 50
   ): Promise<RadioStation[]> {
     try {
-      const response = await axios.get(
-        `${this.baseUrl}/stations/bylanguageexact/${language}`,
-        {
-          params: {
-            limit,
-            hidebroken: true,
-            order: "votes",
-            reverse: true,
-          },
-        }
+      const response = await fetch(
+        this.buildUrl(`/stations/bylanguageexact/${language}`, {
+          limit,
+          hidebroken: true,
+          order: "votes",
+          reverse: true,
+        })
       );
-      return response.data;
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      return (await response.json()) as RadioStation[];
     } catch (error) {
       throw new Error(`Failed to fetch stations by language: ${error}`);
     }
@@ -108,7 +129,7 @@ export class RadioBrowserAPI {
   // Usage: await api.clickStation(station.stationuuid) when playing a new station
   async clickStation(stationUuid: string): Promise<void> {
     try {
-      await axios.get(`${this.baseUrl}/url/${stationUuid}`);
+      await fetch(this.buildUrl(`/url/${stationUuid}`));
     } catch (error) {
       // Ignore errors, this is just for tracking
     }

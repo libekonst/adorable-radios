@@ -1,4 +1,3 @@
-import axios from "axios";
 import { type ChildProcess, spawn } from "child_process";
 import { EventEmitter } from "events";
 import { Socket } from "net";
@@ -92,15 +91,16 @@ export class RadioPlayer extends EventEmitter<RadioPlayerEvents> {
 
       // Fetch metadata from station headers
       try {
-        const response = await axios.head(url, {
-          timeout: 5000,
+        const response = await fetch(url, {
+          method: "HEAD",
+          signal: AbortSignal.timeout(5000),
           headers: {
             "User-Agent": "Adorable-Radios/1.0",
             "Icy-MetaData": "1",
           },
         });
 
-        const icyName = response.headers["icy-name"];
+        const icyName = response.headers.get("icy-name");
         if (icyName) {
           this.currentMetadata = icyName;
         }
