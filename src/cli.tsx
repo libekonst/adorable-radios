@@ -2,5 +2,10 @@
 import React from 'react';
 import { render } from 'ink';
 import { App } from './components/App.js';
+import { QueryProvider } from './providers/QueryProvider.js';
 
-render(<App />);
+render(
+  <QueryProvider>
+    <App />
+  </QueryProvider>
+);
