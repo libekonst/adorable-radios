@@ -1,7 +1,8 @@
 import type { RadioStation } from "../types.js";
 
+// TODO fix radio browser server URL changing - do DNS lookup https://api.radio-browser.info/
 export class RadioBrowserAPI {
-  private baseUrl: string = "https://fi1.api.radio-browser.info/json";
+  private baseUrl: string = "https://de1.api.radio-browser.info/json";
 
   private buildUrl(path: string, params?: Record<string, any>): string {
     const url = new URL(`${this.baseUrl}${path}`);
