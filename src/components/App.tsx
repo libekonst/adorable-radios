@@ -1,10 +1,12 @@
 import { Box, Text, useApp, useInput } from "ink";
 import Spinner from "ink-spinner";
 import React, { useEffect, useState } from "react";
+import {
+  useSearchStations,
+  useTopStations,
+} from "../hooks/useRadioStations.js";
 import { RadioPlayer } from "../services/player.js";
-import { RadioBrowserAPI } from "../services/radio-browser.js";
 import { StorageManager } from "../services/storage.js";
-import type { AppState } from "../types.js";
 import { HelpBar } from "./HelpBar.js";
 import { NowPlaying } from "./NowPlaying.js";
 import { SearchInput } from "./SearchInput.js";
@@ -13,44 +15,32 @@ import { usePlaybackStatus } from "./usePlaybackStatus.js";
 
 // TODO proper singleton pattern for testability and lazy initialization (save startup time/memory)
 export const player = new RadioPlayer();
-const api = new RadioBrowserAPI();
 export const storage = new StorageManager();
 
 export function App() {
   const { exit } = useApp();
-  const [state, setState] = useState<AppState>({
-    view: "browse",
-    stations: [],
-    favorites: storage.getFavorites(),
-    searchQuery: "",
-    selectedIndex: 0,
-    loading: true,
-    error: null,
-  });
-
+  const [view, setView] = useState<"browse" | "favorites">("browse");
+  const [favorites, setFavorites] = useState(storage.getFavorites());
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedIndex, setSelectedIndex] = useState(0);
   const [isSearching, setIsSearching] = useState(false);
 
-  // Initialize player and load stations
+  // Fetch stations based on search query
+  const topStationsQuery = useTopStations(100);
+  const searchStationsQuery = useSearchStations(searchQuery);
+
+  // Determine which query to use
+  const activeQuery = searchQuery ? searchStationsQuery : topStationsQuery;
+  const stations = activeQuery.data ?? [];
+  const loading = activeQuery.isLoading;
+  const error = activeQuery.error ? String(activeQuery.error) : null;
+
+  // Initialize player
+  // TODO handle error, move to a better place
   useEffect(() => {
     const init = async () => {
-      try {
-        await player.initialize({ initialVolume: storage.getVolume() ?? 50 });
-
-        const topStations = await api.getTopStations(100);
-        setState(prev => ({
-          ...prev,
-          stations: topStations,
-          loading: false,
-        }));
-      } catch (error) {
-        setState(prev => ({
-          ...prev,
-          error: String(error),
-          loading: false,
-        }));
-      }
+      await player.initialize({ initialVolume: storage.getVolume() ?? 50 });
     };
-
     init();
   }, []);
 
@@ -68,21 +58,14 @@ export function App() {
       return;
     }
 
-    const currentList =
-      state.view === "favorites" ? state.favorites : state.stations;
+    const currentList = view === "favorites" ? favorites : stations;
 
     if (key.upArrow) {
-      setState(prev => ({
-        ...prev,
-        selectedIndex: Math.max(0, prev.selectedIndex - 1),
-      }));
+      setSelectedIndex(Math.max(0, selectedIndex - 1));
     } else if (key.downArrow) {
-      setState(prev => ({
-        ...prev,
-        selectedIndex: Math.min(currentList.length - 1, prev.selectedIndex + 1),
-      }));
+      setSelectedIndex(Math.min(currentList.length - 1, selectedIndex + 1));
     } else if (key.return && !isSearching) {
-      const station = currentList[state.selectedIndex];
+      const station = currentList[selectedIndex];
       if (station) {
         await player.toggleOrPlay(station);
       }
@@ -95,53 +78,29 @@ export function App() {
       const newVolume = await player.decreaseVolume();
       storage.setVolume(newVolume);
     } else if (input === "f") {
-      const station = currentList[state.selectedIndex];
+      const station = currentList[selectedIndex];
       if (station) {
         storage.toggleFavorite(station);
-        setState(prev => ({
-          ...prev,
-          favorites: storage.getFavorites(),
-        }));
+        setFavorites(storage.getFavorites());
       }
     } else if (input === "s") {
       setIsSearching(true);
     } else if (input === "b") {
-      setState(prev => ({
-        ...prev,
-        view: "browse",
-        selectedIndex: 0,
-      }));
+      setView("browse");
+      setSelectedIndex(0);
     } else if (input === "v") {
-      setState(prev => ({
-        ...prev,
-        view: "favorites",
-        selectedIndex: 0,
-      }));
+      setView("favorites");
+      setSelectedIndex(0);
     } else if (input === "\u001B" && isSearching) {
       setIsSearching(false);
     }
   });
 
-  const handleSearch = async (query: string) => {
+  const handleSearch = (query: string) => {
     setIsSearching(false);
-    setState(prev => ({ ...prev, loading: true, searchQuery: query }));
-
-    try {
-      const results = await api.searchStations(query);
-      setState(prev => ({
-        ...prev,
-        stations: results,
-        view: "browse",
-        selectedIndex: 0,
-        loading: false,
-      }));
-    } catch (error) {
-      setState(prev => ({
-        ...prev,
-        error: String(error),
-        loading: false,
-      }));
-    }
+    setSearchQuery(query);
+    setView("browse");
+    setSelectedIndex(0);
   };
 
   const handleCancelSearch = () => {
@@ -149,9 +108,8 @@ export function App() {
   };
 
   // TODO Improve view router
-  const currentList =
-    state.view === "favorites" ? state.favorites : state.stations;
-  const favoriteUuids = new Set(state.favorites.map(f => f.stationuuid));
+  const currentList = view === "favorites" ? favorites : stations;
+  const favoriteUuids = new Set(favorites.map(f => f.stationuuid));
 
   return (
     <Box flexDirection="column" padding={1}>
@@ -174,27 +132,25 @@ export function App() {
         <>
           <Box marginBottom={1}>
             <Text bold color="cyan">
-              {state.view === "favorites"
-                ? "Your Favorites"
-                : "Browse Stations"}
-              {state.searchQuery && ` - Search: "${state.searchQuery}"`}
+              {view === "favorites" ? "Your Favorites" : "Browse Stations"}
+              {searchQuery && ` - Search: "${searchQuery}"`}
             </Text>
           </Box>
 
-          {state.loading ? (
+          {loading ? (
             <Box>
               <Text color="green">
                 <Spinner type="dots" /> Loading stations...
               </Text>
             </Box>
-          ) : state.error ? (
+          ) : error ? (
             <Box>
-              <Text color="red">Error: {state.error}</Text>
+              <Text color="red">Error: {error}</Text>
             </Box>
           ) : (
             <StationList
               stations={currentList}
-              selectedIndex={state.selectedIndex}
+              selectedIndex={selectedIndex}
               favoriteUuids={favoriteUuids}
               currentStationUuid={currentStation?.stationuuid}
             />
