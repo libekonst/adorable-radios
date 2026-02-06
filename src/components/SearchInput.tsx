@@ -1,6 +1,6 @@
-import React, { useState } from "react";
 import { Box, Text } from "ink";
 import TextInput from "ink-text-input";
+import React, { useState } from "react";
 
 type Props = {
   onSearch: (query: string) => void;
@@ -11,8 +11,9 @@ export function SearchInput({ onSearch, onCancel }: Props) {
   const [query, setQuery] = useState("");
 
   const handleSubmit = () => {
-    if (query.trim()) {
-      onSearch(query.trim());
+    const trimmedQuery = query.trim();
+    if (trimmedQuery) {
+      onSearch(trimmedQuery);
     } else {
       onCancel();
     }

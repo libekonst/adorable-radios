@@ -1,6 +1,6 @@
-import React from "react";
 import { Box, Text } from "ink";
-import { RadioStation } from "../types.js";
+import React from "react";
+import type { RadioStation } from "../types.js";
 
 type Props = {
   stations: RadioStation[];
@@ -32,7 +32,10 @@ export function StationList({
 
         return (
           <Box key={station.stationuuid} marginBottom={0}>
-            <Text color={isSelected ? "cyan" : "white"} bold={isSelected}>
+            <Text
+              color={isSelected ? "#81c8be" : isPlaying ? "#a6d189" : "white"}
+              bold={isSelected}
+            >
               {isSelected ? "> " : "  "}
               {isPlaying ? "♫ " : ""}
               {station.name}
