@@ -89,7 +89,9 @@ export function App() {
       setView("browse");
       setSelectedIndex(0);
     } else if (input === "v") {
-      setView("favorites");
+      setView(currentView =>
+        currentView === "browse" ? "favorites" : "browse"
+      );
       setSelectedIndex(0);
     } else if (input === "\u001B" && isSearching) {
       setIsSearching(false);
