@@ -33,7 +33,7 @@ export function StationList({
         return (
           <Box key={station.stationuuid} marginBottom={0}>
             <Text
-              color={isSelected ? "#81c8be" : isPlaying ? "#a6d189" : "white"}
+              color={isSelected ? "#81a1c1" : isPlaying ? "#a3be8c" : "white"}
               bold={isSelected}
             >
               {isSelected ? "> " : "  "}
