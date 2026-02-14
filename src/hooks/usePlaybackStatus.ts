@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
+import { player, storage } from "../components/App";
 import type { PlaybackState, RadioStation } from "../types";
-import { player, storage } from "./App";
 
 export function usePlaybackStatus(): PlaybackState {
   const [isPlaying, setIsPlaying] = useState(false);

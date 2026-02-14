@@ -1,5 +1,6 @@
 import { Box, Text, useApp, useInput } from "ink";
 import React, { useEffect, useState } from "react";
+import { usePlaybackStatus } from "../hooks/usePlaybackStatus.js";
 import {
   useSearchStations,
   useTopStations,
@@ -11,7 +12,6 @@ import { FavoritesView } from "./FavoritesView.js";
 import { HelpBar } from "./HelpBar.js";
 import { NowPlaying } from "./NowPlaying.js";
 import { SearchInput } from "./SearchInput.js";
-import { usePlaybackStatus } from "./usePlaybackStatus.js";
 
 // TODO proper singleton pattern for testability and lazy initialization (save startup time/memory)
 export const player = new RadioPlayer();
