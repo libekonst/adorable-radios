@@ -1,5 +1,4 @@
 import { Box, Text, useApp, useInput } from "ink";
-import Spinner from "ink-spinner";
 import React, { useEffect, useState } from "react";
 import {
   useSearchStations,
@@ -12,7 +11,6 @@ import { FavoritesView } from "./FavoritesView.js";
 import { HelpBar } from "./HelpBar.js";
 import { NowPlaying } from "./NowPlaying.js";
 import { SearchInput } from "./SearchInput.js";
-import { StationList } from "./StationList.js";
 import { usePlaybackStatus } from "./usePlaybackStatus.js";
 
 // TODO proper singleton pattern for testability and lazy initialization (save startup time/memory)
